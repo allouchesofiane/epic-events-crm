@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime, Enum
 from datetime import datetime
 import enum
 from src.database.config import Base
-
+from sqlalchemy.orm import relationship
 
 # les roles 
 class Role(enum.Enum):
@@ -24,6 +24,9 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now)
 
+    # Relations
+    clients_as_commercial = relationship("Client", back_populates="commercial_contact")
+    
     def to_dict(self):
         return {
             "id": self.id,
