@@ -20,9 +20,10 @@ class Client(Base):
     # Clé étrangère vers l'utilisateur (commercial)
     commercial_contact_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     
-    # Relation avec User
+    # Relations
     commercial_contact = relationship("User", back_populates="clients_as_commercial")
-
+    contracts = relationship("Contract", back_populates="client", cascade="all, delete-orphan")
+    
     def to_dict(self):
         return {
             "id": self.id,
