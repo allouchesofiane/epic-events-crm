@@ -27,6 +27,7 @@ class User(Base):
     # Relations
     clients_as_commercial = relationship("Client", back_populates="commercial_contact")
     contracts_as_commercial = relationship("Contract", back_populates="commercial_contact")
+    events_as_support = relationship("Event", back_populates="support_contact")
     
     def to_dict(self):
         return {

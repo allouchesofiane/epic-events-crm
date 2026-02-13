@@ -20,7 +20,8 @@ class Contract(Base):
     # Relations 
     client = relationship("Client", back_populates="contracts")
     commercial_contact = relationship("User", back_populates="contracts_as_commercial")
-
+    event = relationship("Event", back_populates="contract", uselist=False, cascade="all, delete-orphan")
+    
     def to_dict(self):
         return {
             "id": self.id,
