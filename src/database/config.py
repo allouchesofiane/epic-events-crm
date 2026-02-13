@@ -21,14 +21,14 @@ engine = create_engine(
     connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
 )
 
-# Session factory
+# Session
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 def init_db():
     """Initialise la base de données (crée les tables)."""
     Base.metadata.create_all(bind=engine)
-    print("✅ Base de données initialisée avec succès !")
+    print("Base de données initialisée avec succès !")
 
 
 def get_db():
