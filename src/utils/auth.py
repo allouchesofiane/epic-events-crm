@@ -1,35 +1,60 @@
+
 import os
 import bcrypt
 import jwt
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 
 load_dotenv()
 
-SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+JWT_ALGORITHM = "HS256"
+JWT_EXPIRATION_HOURS = 8
 
 
-# Hash d’un mot de passe
-def hash_password(password):
-    hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
-    return hashed.decode()
+def hash_password(password: str) -> str:
+    """
+    Hash un mot de passe avec bcrypt.
+    """
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed.decode('utf-8')
 
 
-# Vérifier un mot de passe et son hash
-def verify_password(password, hashed_password):
-    return bcrypt.checkpw(password.encode(), hashed_password.encode())
+def verify_password(password: str, hashed_password: str) -> bool:
+    """
+    Vérifie un mot de passe contre son hash.
+    """
+    return bcrypt.checkpw(
+        password.encode('utf-8'),
+        hashed_password.encode('utf-8')
+    )
 
 
-# Créer un token JWT
-def create_token(user_id, role):
+def create_access_token(user_id: int, role: str) -> str:
+    """
+    Crée un token JWT pour un utilisateur.
+    """
+    now = datetime.now(timezone.utc)
+    
     payload = {
         "user_id": user_id,
         "role": role,
-        "exp": datetime.now() + timedelta(hours=8)
+        "exp": now + timedelta(hours=JWT_EXPIRATION_HOURS),
+        "iat": now
     }
-    return jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+    token = jwt.encode(payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
+    return token
 
 
-# Lire un token JWT
-def decode_token(token):
-    return jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+def decode_access_token(token: str) -> dict:
+    """
+    Décode et vérifie un token JWT.
+    """
+    try:
+        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise ValueError("Token expiré. Veuillez vous reconnecter.")
+    except jwt.InvalidTokenError:
+        raise ValueError("Token invalide. Veuillez vous reconnecter.")

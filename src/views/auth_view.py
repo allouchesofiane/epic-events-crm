@@ -9,9 +9,8 @@ class AuthView(BaseView):
 
         email = self.prompt("Email")
         password = self.prompt_password("Mot de passe")
-
         return email, password
-
+    
     def display_login_success(self, user):
         self.display_success("Connexion réussie")
         print("Nom :", user.full_name)

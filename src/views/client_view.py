@@ -39,6 +39,7 @@ class ClientView(BaseView):
         return full_name, email, phone, company_name
 
     def display_update_client_form(self, client):
+        
         self.display_title("Mise à jour du client")
 
         full_name = self.prompt("Nouveau nom", client.full_name)

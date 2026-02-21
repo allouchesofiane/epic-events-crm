@@ -24,7 +24,6 @@ class AuthController:
 
         # Créer le token
         token = create_access_token(user.id, user.role.value)
-
         return {
             "token": token,
             "user": user
