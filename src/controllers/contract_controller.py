@@ -6,7 +6,7 @@ from src.permissions.decorators import (
     check_is_gestion,
     check_is_owner_or_gestion
 )
-
+from src.utils.logger import log_event, log_error
 
 class ContractController:
     """Gère les opérations sur les contrats."""
@@ -47,6 +47,12 @@ class ContractController:
 
         self.db.add(new_contract)
         self.db.commit()
+        
+        log_event("contract_created", {
+            "contract_id": new_contract.id,
+            "client_id": client_id,
+            "created_by": self.current_user.id
+})
 
         return new_contract
 
@@ -72,6 +78,10 @@ class ContractController:
         contract.is_signed = True
         self.db.commit()
 
+        log_event("contract_signed", {
+            "contract_id": contract.id,
+            "signed_by": self.current_user.id
+        })
         return contract
 
     def get_contract_by_id(self, contract_id):

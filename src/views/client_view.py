@@ -31,7 +31,7 @@ class ClientView(BaseView):
         full_name = self.prompt("Nom complet")
         email = self.prompt("Email")
         phone = self.prompt("Téléphone")
-        company_name = self.prompt("Nom de l'entreprise (optionnel)", "")
+        company_name = self.prompt("Nom de l'entreprise", "")
 
         if company_name == "":
             company_name = None

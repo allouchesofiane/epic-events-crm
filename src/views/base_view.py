@@ -9,15 +9,15 @@ class BaseView:
 
     @staticmethod
     def display_success(message):
-        print("\n[SUCCÈS]", message)
+        print(message)
 
     @staticmethod
     def display_error(message):
-        print("\n[ERREUR]", message)
+        print(message)
 
     @staticmethod
     def display_info(message):
-        print("\n[INFO]", message)
+        print(message)
 
     @staticmethod
     def display_separator():

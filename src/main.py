@@ -709,6 +709,7 @@ class EpicEventsCRM:
 
 def main():
     """Fonction principale."""
+    init_sentry()
     # Vérifier s'il y a des arguments
     if len(sys.argv) > 1:
         command = sys.argv[1]

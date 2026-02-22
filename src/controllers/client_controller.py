@@ -5,7 +5,7 @@ from src.permissions.decorators import (
     check_is_commercial,
     check_is_owner_or_gestion
 )
-
+from src.utils.logger import log_event, log_error
 
 class ClientController:
     """Gère les opérations sur les clients."""
@@ -31,18 +31,30 @@ class ClientController:
         """Crée un client (COMMERCIAL uniquement)."""
         check_is_commercial(self.current_user)
 
-        new_client = Client(
-            full_name=full_name,
-            email=email,
-            phone=phone,
-            company_name=company_name,
-            commercial_contact_id=self.current_user.id
-        )
+        try:
+            new_client = Client(
+                full_name=full_name,
+                email=email,
+                phone=phone,
+                company_name=company_name,
+                commercial_contact_id=self.current_user.id
+            )
 
-        self.db.add(new_client)
-        self.db.commit()
+            self.db.add(new_client)
+            self.db.commit()
+        
+            # Logger
+            log_event("client_created", {
+                "client_id": new_client.id,
+                "created_by": self.current_user.id
+            })
 
-        return new_client
+            return new_client
+    
+        except Exception as e:
+            log_error(e, {"action": "create_client", "email": email})
+            raise
+
 
     def update_client(self, client_id, full_name=None, email=None,
                       phone=None, company_name=None):
@@ -73,7 +85,12 @@ class ClientController:
             client.company_name = company_name
 
         self.db.commit()
-
+        
+        # Logger
+        log_event("client_updated", {
+            "client_id": client.id,
+            "updated_by": self.current_user.id
+        })
         return client
 
     def get_client_by_id(self, client_id):

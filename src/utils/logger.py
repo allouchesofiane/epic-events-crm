@@ -7,26 +7,36 @@ load_dotenv()
 SENTRY_DSN = os.getenv("SENTRY_DSN")
 
 
-# Initialiser Sentry
 def init_sentry():
+    """Initialise Sentry."""
     if SENTRY_DSN:
-        sentry_sdk.init(dsn=SENTRY_DSN)
-        print("Sentry activé")
+        sentry_sdk.init(
+            dsn=SENTRY_DSN,
+            traces_sample_rate=0.0,
+            profiles_sample_rate=0.0,
+        )
+        print("✓ Sentry activé pour la journalisation")
     else:
-        print("Sentry désactivé")
+        print("⚠ Sentry DSN non configuré - journalisation désactivée")
 
 
-# Envoyer une erreur
-def log_error(error):
+def log_event(event_name, data=None):
+    """
+    Journalise un événement métier.
+    """
     if SENTRY_DSN:
-        sentry_sdk.capture_exception(error)
-    else:
-        print("Erreur :", error)
+        with sentry_sdk.configure_scope() as scope:
+            if data:
+                scope.set_context("event_data", data)
+            sentry_sdk.capture_message(event_name, level="info")
 
 
-# Envoyer un message simple
-def log_message(message):
+def log_error(error, context=None):
+    """
+    Journalise une erreur.
+    """
     if SENTRY_DSN:
-        sentry_sdk.capture_message(message)
-    else:
-        print("Message :", message)
+        with sentry_sdk.configure_scope() as scope:
+            if context:
+                scope.set_context("error_context", context)
+            sentry_sdk.capture_exception(error)
